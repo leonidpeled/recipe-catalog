@@ -102,7 +102,7 @@
   <script>
     // ======= כאן יוכנסו נתוני המתכונים =======
    let recipes = [];
-    fetch('recipes.json')
+fetch('recipes.json?v=' + Date.now())
       .then(r => r.json())
       .then(data => { recipes = data; });
     // ==========================================
