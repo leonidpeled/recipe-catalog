@@ -101,7 +101,10 @@
 
   <script>
     // ======= כאן יוכנסו נתוני המתכונים =======
-    const recipes = RECIPES_DATA;
+   let recipes = [];
+    fetch('recipes.json')
+      .then(r => r.json())
+      .then(data => { recipes = data; });
     // ==========================================
 
     function normalize(str) {
