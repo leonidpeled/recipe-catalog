@@ -5,293 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>קטלוג מתכונים – על השולחן</title>
   <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&family=Heebo:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --cream: #fdf6ee;
-      --warm: #f5e6cf;
-      --rust: #b5451b;
-      --rust-dark: #8f3314;
-      --rust-light: #e8c9a0;
-      --brown: #5c3317;
-      --text: #2d1f14;
-      --muted: #9a7f6a;
-      --card: #fff;
-      --shadow: 0 2px 12px rgba(90,40,10,0.08);
+      --cream: #fdf6ee; --warm: #f5e6cf; --rust: #b5451b; --rust-light: #e8c9a0;
+      --brown: #5c3317; --text: #2d1f14; --muted: #9a7f6a;
+      --card: #fff; --shadow: 0 2px 12px rgba(90,40,10,0.08);
     }
-
-    body {
-      font-family: 'Heebo', sans-serif;
-      background: var(--cream);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* HEADER */
-    header {
-      background: var(--brown);
-      color: var(--cream);
-      padding: 28px 20px 20px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 20px,
-        rgba(255,255,255,0.02) 20px,
-        rgba(255,255,255,0.02) 21px
-      );
-    }
-    header h1 {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 2.4rem;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      position: relative;
-    }
-    header p {
-      font-size: 0.9rem;
-      color: var(--rust-light);
-      margin-top: 4px;
-      font-weight: 300;
-      position: relative;
-    }
-
-    /* SEARCH */
-    .search-section {
-      background: var(--rust);
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
-    .search-wrap {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      max-width: 580px;
-    }
-    #search-input {
-      flex: 1;
-      padding: 13px 18px;
-      font-size: 1rem;
-      font-family: 'Heebo', sans-serif;
-      border: none;
-      border-radius: 10px;
-      background: #fff;
-      outline: none;
-      direction: rtl;
-      color: var(--text);
-    }
+    body { font-family: 'Heebo', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    header { background: var(--brown); color: var(--cream); padding: 28px 20px 20px; text-align: center; position: relative; overflow: hidden; }
+    header::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.02) 20px, rgba(255,255,255,0.02) 21px); }
+    header h1 { font-family: 'Frank Ruhl Libre', serif; font-size: 2.4rem; font-weight: 900; position: relative; }
+    header p { font-size: 0.9rem; color: var(--rust-light); margin-top: 4px; font-weight: 300; position: relative; }
+    .search-section { background: var(--rust); padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .search-wrap { display: flex; gap: 10px; width: 100%; max-width: 580px; }
+    #search-input { flex: 1; padding: 13px 18px; font-size: 1rem; font-family: 'Heebo', sans-serif; border: none; border-radius: 10px; background: #fff; outline: none; direction: rtl; color: var(--text); }
     #search-input::placeholder { color: var(--muted); }
-    #search-btn {
-      padding: 13px 24px;
-      background: var(--brown);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-family: 'Heebo', sans-serif;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s;
-    }
+    #search-btn { padding: 13px 24px; background: var(--brown); color: #fff; border: none; border-radius: 10px; font-size: 0.95rem; font-family: 'Heebo', sans-serif; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
     #search-btn:hover { background: #3d2010; }
-
-    /* CONTROLS */
-    .controls {
-      max-width: 860px;
-      margin: 24px auto 0;
-      padding: 0 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .controls-right {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1.5px solid var(--rust-light);
-      background: #fff;
-      color: var(--brown);
-      font-family: 'Heebo', sans-serif;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .search-hint { font-size: 0.78rem; color: rgba(255,255,255,0.55); max-width: 580px; width: 100%; }
+    .controls { max-width: 860px; margin: 24px auto 0; padding: 0 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+    .controls-right { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: 1.5px solid var(--rust-light); background: #fff; color: var(--brown); font-family: 'Heebo', sans-serif; font-size: 0.88rem; cursor: pointer; transition: all 0.15s; }
     .btn:hover { border-color: var(--rust); color: var(--rust); }
-    .btn.active {
-      background: var(--rust);
-      border-color: var(--rust);
-      color: #fff;
-    }
-    .sort-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-    select {
-      padding: 7px 12px;
-      border-radius: 8px;
-      border: 1.5px solid var(--rust-light);
-      background: #fff;
-      font-family: 'Heebo', sans-serif;
-      font-size: 0.88rem;
-      color: var(--brown);
-      cursor: pointer;
-      outline: none;
-    }
-    select:focus { border-color: var(--rust); }
-
-    /* ISSUE FILTER */
-    .issue-filter {
-      max-width: 860px;
-      margin: 12px auto 0;
-      padding: 0 16px;
-      display: none;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .btn.active { background: var(--rust); border-color: var(--rust); color: #fff; }
+    .sort-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--muted); }
+    select { padding: 7px 12px; border-radius: 8px; border: 1.5px solid var(--rust-light); background: #fff; font-family: 'Heebo', sans-serif; font-size: 0.88rem; color: var(--brown); cursor: pointer; outline: none; }
+    .issue-filter { max-width: 860px; margin: 12px auto 0; padding: 0 16px; display: none; flex-wrap: wrap; gap: 6px; }
     .issue-filter.visible { display: flex; }
-    .issue-btn {
-      padding: 5px 14px;
-      border-radius: 20px;
-      border: 1.5px solid var(--rust-light);
-      background: #fff;
-      color: var(--brown);
-      font-family: 'Heebo', sans-serif;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .issue-btn { padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--rust-light); background: #fff; color: var(--brown); font-family: 'Heebo', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
     .issue-btn:hover { border-color: var(--rust); }
-    .issue-btn.active {
-      background: var(--rust);
-      border-color: var(--rust);
-      color: #fff;
-    }
-
-    /* RESULTS */
-    #results {
-      max-width: 860px;
-      margin: 20px auto 40px;
-      padding: 0 16px;
-    }
-    .count {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 14px;
-      padding-right: 2px;
-    }
-
-    /* TABLE VIEW */
-    .recipe-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--card);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-    }
-    .recipe-table thead tr {
-      background: var(--brown);
-      color: var(--cream);
-    }
-    .recipe-table thead th {
-      padding: 13px 18px;
-      text-align: right;
-      font-family: 'Frank Ruhl Libre', serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-    .recipe-table tbody tr {
-      border-bottom: 1px solid #f0e8dc;
-      transition: background 0.12s;
-    }
+    .issue-btn.active { background: var(--rust); border-color: var(--rust); color: #fff; }
+    #results { max-width: 860px; margin: 20px auto 40px; padding: 0 16px; }
+    .count { font-size: 0.85rem; color: var(--muted); margin-bottom: 14px; }
+    .recipe-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+    .recipe-table thead tr { background: var(--brown); color: var(--cream); }
+    .recipe-table thead th { padding: 13px 18px; text-align: right; font-family: 'Frank Ruhl Libre', serif; font-weight: 700; font-size: 0.95rem; }
+    .recipe-table tbody tr { border-bottom: 1px solid #f0e8dc; transition: background 0.12s; }
     .recipe-table tbody tr:last-child { border-bottom: none; }
     .recipe-table tbody tr:hover { background: #fdf0e4; }
-    .recipe-table td {
-      padding: 11px 18px;
-      font-size: 0.93rem;
-    }
+    .recipe-table td { padding: 11px 18px; font-size: 0.93rem; }
     .recipe-table td:first-child { font-weight: 500; }
-    .badge-issue {
-      display: inline-block;
-      background: var(--rust);
-      color: #fff;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 500;
-    }
-    .badge-page {
-      display: inline-block;
-      background: var(--warm);
-      color: var(--brown);
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 500;
-    }
-
-    /* GROUPED VIEW */
-    .group-block {
-      margin-bottom: 24px;
-      background: var(--card);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-    }
-    .group-header {
-      background: var(--brown);
-      color: var(--cream);
-      padding: 12px 20px;
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .group-header span {
-      font-size: 0.8rem;
-      color: var(--rust-light);
-      font-family: 'Heebo', sans-serif;
-      font-weight: 300;
-    }
-    .group-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      border-bottom: 1px solid #f0e8dc;
-      transition: background 0.12s;
-    }
+    .badge-issue { display: inline-block; background: var(--rust); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 500; }
+    .badge-page { display: inline-block; background: var(--warm); color: var(--brown); padding: 2px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 500; }
+    .group-block { margin-bottom: 24px; background: var(--card); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+    .group-header { background: var(--brown); color: var(--cream); padding: 12px 20px; font-family: 'Frank Ruhl Libre', serif; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+    .group-header span { font-size: 0.8rem; color: var(--rust-light); font-family: 'Heebo', sans-serif; font-weight: 300; }
+    .group-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid #f0e8dc; transition: background 0.12s; }
     .group-row:last-child { border-bottom: none; }
     .group-row:hover { background: #fdf0e4; }
     .group-row-name { font-size: 0.93rem; font-weight: 500; }
     .group-row-page { font-size: 0.82rem; color: var(--muted); }
-
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 60px 0;
-      font-size: 1rem;
-    }
+    .empty { text-align: center; color: var(--muted); padding: 60px 0; font-size: 1rem; line-height: 2; }
+    mark { background: #ffe0b2; color: var(--brown); border-radius: 2px; padding: 0 1px; }
   </style>
 </head>
 <body>
@@ -303,9 +70,10 @@
 
 <div class="search-section">
   <div class="search-wrap">
-    <input id="search-input" type="text" placeholder="חפש מתכון..." autocomplete="off" />
+    <input id="search-input" type="text" placeholder='חפש: "עוף לימון", "שנישל", "קציצה"...' autocomplete="off" />
     <button id="search-btn">חיפוש</button>
   </div>
+  <div class="search-hint">החיפוש חכם – מתעלם משגיאות כתיב, יחיד/רבים, זכר/נקבה ומילות קישור</div>
 </div>
 
 <div class="controls">
@@ -323,101 +91,123 @@
 </div>
 
 <div class="issue-filter" id="issue-filter"></div>
-
 <div id="results"></div>
 
 <script>
   let recipes = [];
-  let mode = 'all'; // 'all' | 'issue' | 'search'
+  let fuse = null;
+  let mode = 'all';
   let selectedIssue = null;
   let sortBy = 'abc';
 
-  fetch('recipes.json?v=' + Date.now())
-    .then(r => r.json())
-    .then(data => {
-      recipes = data;
-      buildIssueButtons();
-      render();
-    });
+  function stemHebrew(word) {
+    if (word.length <= 2) return word;
+    word = word.replace(/^(ו|ב|כ|ל|מ|ש|ה|מה|שה|וה|לה|בה|כש|לכש)/, '');
+    if (word.length <= 2) return word;
+    const suffixes = ['יות', 'יים', 'ות', 'ים', 'ית', 'נו', 'כם', 'הם', 'ה', 'י', 'ך', 'ן'];
+    for (const suf of suffixes) {
+      if (word.endsWith(suf) && word.length - suf.length >= 2) {
+        return word.slice(0, word.length - suf.length);
+      }
+    }
+    return word;
+  }
 
-  function normalize(str) {
-    return str.replace(/[־\-]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+  function normalizeHebrew(str) {
+    if (!str) return '';
+    let s = str.trim().toLowerCase().replace(/[\u0591-\u05C7]/g, '').replace(/[־\-–]/g, ' ');
+    return s.split(/\s+/).filter(Boolean).map(stemHebrew).join(' ');
+  }
+
+  function buildIndex(data) {
+    const enriched = data.map(r => ({
+      ...r,
+      normalized: normalizeHebrew(r.name),
+      words: normalizeHebrew(r.name).split(' ').filter(w => w.length > 1)
+    }));
+    fuse = new Fuse(enriched, {
+      keys: [
+        { name: 'normalized', weight: 2 },
+        { name: 'name', weight: 1.5 },
+        { name: 'words', weight: 1 }
+      ],
+      threshold: 0.42,
+      minMatchCharLength: 2,
+      includeScore: true,
+      shouldSort: true,
+      ignoreLocation: true
+    });
+    return enriched;
+  }
+
+  function smartSearch(query) {
+    if (!query.trim()) return [];
+    const nq = normalizeHebrew(query);
+    const qWords = nq.split(' ').filter(w => w.length > 1);
+    let results = fuse.search(nq);
+    if (qWords.length > 1) {
+      const seen = new Set(results.map(r => r.item.name));
+      for (const w of qWords) {
+        for (const r of fuse.search(w)) {
+          if (!seen.has(r.item.name)) {
+            results.push({ ...r, score: (r.score || 0) + 0.15 });
+            seen.add(r.item.name);
+          }
+        }
+      }
+    }
+    results.sort((a, b) => (a.score || 0) - (b.score || 0));
+    return results.map(r => r.item);
+  }
+
+  function highlight(text, query) {
+    if (!query) return text;
+    const words = query.trim().split(/\s+/).filter(w => w.length > 1);
+    let result = text;
+    for (const w of words) {
+      try {
+        result = result.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark>${m}</mark>`);
+      } catch(e) {}
+    }
+    return result;
   }
 
   function getSorted(list) {
-    if (sortBy === 'abc') {
-      return [...list].sort((a, b) => a.name.localeCompare(b.name, 'he'));
-    } else {
-      return [...list].sort((a, b) => {
-        const ai = parseInt(a.issue), bi = parseInt(b.issue);
-        if (ai !== bi) return ai - bi;
-        return parseInt(a.page) - parseInt(b.page);
-      });
-    }
+    if (sortBy === 'abc') return [...list].sort((a, b) => a.name.localeCompare(b.name, 'he'));
+    return [...list].sort((a, b) => {
+      const ai = parseInt(a.issue), bi = parseInt(b.issue);
+      return ai !== bi ? ai - bi : parseInt(a.page) - parseInt(b.page);
+    });
   }
 
   function buildIssueButtons() {
     const issues = [...new Set(recipes.map(r => r.issue))].sort((a, b) => parseInt(a) - parseInt(b));
-    const wrap = document.getElementById('issue-filter');
-    wrap.innerHTML = issues.map(iss =>
+    document.getElementById('issue-filter').innerHTML = issues.map(iss =>
       `<button class="issue-btn" data-issue="${iss}" onclick="selectIssue('${iss}')">גיליון ${iss}</button>`
     ).join('');
   }
 
   function selectIssue(iss) {
     selectedIssue = iss;
-    document.querySelectorAll('.issue-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.issue === iss);
-    });
+    document.querySelectorAll('.issue-btn').forEach(b => b.classList.toggle('active', b.dataset.issue === iss));
     render();
   }
 
-  function render() {
-    const query = document.getElementById('search-input').value.trim();
-    let list;
-
-    if (query) {
-      const q = normalize(query);
-      list = recipes.filter(r => normalize(r.name).includes(q));
-      renderTable(list, `נמצאו ${list.length} תוצאות עבור "${query}"`);
-      return;
-    }
-
-    if (mode === 'all') {
-      list = getSorted(recipes);
-      renderTable(list, `סה"כ ${list.length} מתכונים`);
-    } else {
-      // by issue
-      if (selectedIssue) {
-        list = getSorted(recipes.filter(r => r.issue === selectedIssue));
-        renderTable(list, `${list.length} מתכונים בגיליון ${selectedIssue}`);
-      } else {
-        renderGrouped();
-      }
-    }
-  }
-
-  function renderTable(list, countText) {
+  function renderTable(list, countText, query = '') {
     const div = document.getElementById('results');
-    if (list.length === 0) {
-      div.innerHTML = '<div class="empty">לא נמצאו מתכונים 🙁</div>';
+    if (!list.length) {
+      div.innerHTML = `<div class="empty">לא נמצאו מתכונים תואמים 🙁<br><small>נסה מילה אחרת, למשל: "עוף", "דג", "שוקולד"</small></div>`;
       return;
     }
-    div.innerHTML = `<p class="count">${countText}</p>` +
-      `<table class="recipe-table">
-        <thead><tr>
-          <th>שם המתכון</th>
-          <th>גיליון</th>
-          <th>עמוד</th>
-        </tr></thead>
-        <tbody>
-          ${list.map(r => `
-            <tr>
-              <td>${r.name}</td>
-              <td><span class="badge-issue">${r.issue}</span></td>
-              <td><span class="badge-page">עמ׳ ${r.page}</span></td>
-            </tr>
-          `).join('')}
+    div.innerHTML = `<p class="count">${countText}</p>
+      <table class="recipe-table">
+        <thead><tr><th>שם המתכון</th><th>גיליון</th><th>עמוד</th></tr></thead>
+        <tbody>${list.map(r => `
+          <tr>
+            <td>${query ? highlight(r.name, query) : r.name}</td>
+            <td><span class="badge-issue">${r.issue}</span></td>
+            <td><span class="badge-page">עמ׳ ${r.page}</span></td>
+          </tr>`).join('')}
         </tbody>
       </table>`;
   }
@@ -429,25 +219,38 @@
     for (const iss of issues) {
       const group = getSorted(recipes.filter(r => r.issue === iss));
       html += `<div class="group-block">
-        <div class="group-header">
-          גיליון ${iss}
-          <span>${group.length} מתכונים</span>
-        </div>
-        ${group.map(r => `
-          <div class="group-row">
-            <span class="group-row-name">${r.name}</span>
-            <span class="group-row-page">עמ׳ ${r.page}</span>
-          </div>
-        `).join('')}
+        <div class="group-header">גיליון ${iss}<span>${group.length} מתכונים</span></div>
+        ${group.map(r => `<div class="group-row"><span class="group-row-name">${r.name}</span><span class="group-row-page">עמ׳ ${r.page}</span></div>`).join('')}
       </div>`;
     }
     div.innerHTML = html;
   }
 
-  // Buttons
+  function render() {
+    const query = document.getElementById('search-input').value.trim();
+    if (query) {
+      const list = smartSearch(query);
+      renderTable(list, `נמצאו ${list.length} תוצאות עבור "${query}"`, query);
+      return;
+    }
+    if (mode === 'all') {
+      renderTable(getSorted(recipes), `סה"כ ${recipes.length} מתכונים`);
+    } else {
+      if (selectedIssue) {
+        const list = getSorted(recipes.filter(r => r.issue === selectedIssue));
+        renderTable(list, `${list.length} מתכונים בגיליון ${selectedIssue}`);
+      } else {
+        renderGrouped();
+      }
+    }
+  }
+
+  fetch('recipes.json?v=' + Date.now())
+    .then(r => r.json())
+    .then(data => { recipes = buildIndex(data); buildIssueButtons(); render(); });
+
   document.getElementById('btn-all').addEventListener('click', () => {
-    mode = 'all';
-    selectedIssue = null;
+    mode = 'all'; selectedIssue = null;
     document.getElementById('btn-all').classList.add('active');
     document.getElementById('btn-by-issue').classList.remove('active');
     document.getElementById('issue-filter').classList.remove('visible');
@@ -456,8 +259,7 @@
   });
 
   document.getElementById('btn-by-issue').addEventListener('click', () => {
-    mode = 'issue';
-    selectedIssue = null;
+    mode = 'issue'; selectedIssue = null;
     document.getElementById('btn-by-issue').classList.add('active');
     document.getElementById('btn-all').classList.remove('active');
     document.getElementById('issue-filter').classList.add('visible');
@@ -466,17 +268,14 @@
     render();
   });
 
-  document.getElementById('sort-select').addEventListener('change', e => {
-    sortBy = e.target.value;
-    render();
-  });
-
+  document.getElementById('sort-select').addEventListener('change', e => { sortBy = e.target.value; render(); });
   document.getElementById('search-btn').addEventListener('click', render);
-  document.getElementById('search-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') render();
-  });
+  document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') render(); });
+
+  let searchTimeout;
   document.getElementById('search-input').addEventListener('input', () => {
-    if (!document.getElementById('search-input').value) render();
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(render, 250);
   });
 </script>
 </body>
