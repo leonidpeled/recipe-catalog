@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>קטלוג מתכונים – על השולחן</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #fdf6ee;
+      color: #2d2d2d;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      color: #b5451b;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+    .search-wrap {
+      max-width: 540px;
+      margin: 0 auto 32px;
+      display: flex;
+      gap: 10px;
+    }
+    #search-input {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      border: 2px solid #e8c9a0;
+      border-radius: 10px;
+      background: #fff;
+      outline: none;
+      direction: rtl;
+    }
+    #search-input:focus { border-color: #b5451b; }
+    #search-btn {
+      padding: 12px 22px;
+      background: #b5451b;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    #search-btn:hover { background: #8f3314; }
+    #results {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .result-card {
+      background: #fff;
+      border: 1.5px solid #e8c9a0;
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .recipe-name {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #2d2d2d;
+      flex: 1;
+    }
+    .badge {
+      background: #fdf0e2;
+      border: 1.5px solid #e8c9a0;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.92rem;
+      color: #7a4010;
+      white-space: nowrap;
+      text-align: center;
+      min-width: 100px;
+    }
+    .badge span { display: block; font-size: 0.75rem; color: #aaa; }
+    .empty { text-align: center; color: #aaa; padding: 40px 0; font-size: 1rem; }
+    .count { text-align: center; color: #999; margin-bottom: 18px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>📖 קטלוג מתכונים</h1>
+  <p class="subtitle">חיפוש מתכונים מגיליונות "על השולחן"</p>
+
+  <div class="search-wrap">
+    <input id="search-input" type="text" placeholder="חפש מתכון..." autocomplete="off" />
+    <button id="search-btn">חיפוש</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    // ======= כאן יוכנסו נתוני המתכונים =======
+    const recipes = RECIPES_DATA;
+    // ==========================================
+
+    function normalize(str) {
+      return str.replace(/[־\-]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+    }
+
+    function search(query) {
+      if (!query.trim()) return [];
+      const q = normalize(query);
+      return recipes.filter(r => normalize(r.name).includes(q));
+    }
+
+    function render(results, query) {
+      const div = document.getElementById('results');
+      if (!query.trim()) { div.innerHTML = ''; return; }
+      if (results.length === 0) {
+        div.innerHTML = '<div class="empty">לא נמצאו מתכונים תואמים 🙁</div>';
+        return;
+      }
+      div.innerHTML = `<p class="count">נמצאו ${results.length} תוצאות</p>` +
+        results.map(r => `
+          <div class="result-card">
+            <div class="recipe-name">${r.name}</div>
+            <div class="badge">
+              <span>גיליון</span>${r.issue}
+              <span style="margin-top:4px">עמוד</span>${r.page}
+            </div>
+          </div>
+        `).join('');
+    }
+
+    document.getElementById('search-btn').addEventListener('click', () => {
+      const q = document.getElementById('search-input').value;
+      render(search(q), q);
+    });
+    document.getElementById('search-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const q = e.target.value;
+        render(search(q), q);
+      }
+    });
+  </script>
+</body>
+</html>
