@@ -140,26 +140,29 @@
     return enriched;
   }
 
-  function smartSearch(query) {
+function smartSearch(query) {
     if (!query.trim()) return [];
     const nq = normalizeHebrew(query);
     const qWords = nq.split(' ').filter(w => w.length > 1);
-    let results = fuse.search(nq);
-    if (qWords.length > 1) {
-      const seen = new Set(results.map(r => r.item.name));
-      for (const w of qWords) {
-        for (const r of fuse.search(w)) {
-          if (!seen.has(r.item.name)) {
-            results.push({ ...r, score: (r.score || 0) + 0.15 });
-            seen.add(r.item.name);
-          }
-        }
-      }
-    }
-    results.sort((a, b) => (a.score || 0) - (b.score || 0));
-    return results.map(r => r.item);
-  }
 
+    if (qWords.length === 1) {
+      // מילה בודדת – חיפוש רגיל עם Fuse
+      return fuse.search(nq).map(r => r.item);
+    }
+
+    // כמה מילים – AND חיפוש
+    // מחזירים רק מתכונים שמכילים את כל המילים
+    return recipes.filter(r => {
+      const name = normalizeHebrew(r.name);
+      return qWords.every(word => {
+        // בודקים התאמה מדויקת או קרובה לכל מילה
+        if (name.includes(word)) return true;
+        // בודקים גם עם Fuse למילה בודדת (שגיאות כתיב)
+        const results = fuse.search(word);
+        return results.some(res => res.item.name === r.name && (res.score || 1) < 0.45);
+      });
+    });
+  }
   function highlight(text, query) {
     if (!query) return text;
     const words = query.trim().split(/\s+/).filter(w => w.length > 1);
