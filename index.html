@@ -267,8 +267,8 @@
       return;
     }
     if (mode==='all') {
-      renderVirtual(getSorted(recipes), `סה"כ ${recipes.length} מתכונים`);
-    } else {
+const issueCount = new Set(recipes.map(r=>r.issue)).size;
+renderVirtual(getSorted(recipes), `סה"כ ${recipes.length} מתכונים מ-${issueCount} גיליונות`);    } else {
       if (selectedIssue) {
         const list = getSorted(recipes.filter(r=>r.issue===selectedIssue));
         renderVirtual(list, `${list.length} מתכונים בגיליון ${selectedIssue}`);
