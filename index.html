@@ -169,14 +169,13 @@
     if (!query.trim()) return [];
     const nq = norm(query);
     const words = nq.split(' ').filter(w=>w.length>1);
-    if (words.length === 1) return fuse.search(nq).map(r=>r.item);
-    // AND חיפוש – כל המילים חייבות להופיע
+    if (words.length === 1) {
+      return fuse.search(nq).map(r=>r.item);
+    }
+    // AND מהיר – בודק ישירות על השדה המנורמל
     return recipes.filter(r => {
       const name = r._n;
-      return words.every(word => {
-        if (name.includes(word)) return true;
-        return fuse.search(word).some(res => res.item.name === r.name && (res.score||1) < 0.45);
-      });
+      return words.every(word => name.includes(word));
     });
   }
 
