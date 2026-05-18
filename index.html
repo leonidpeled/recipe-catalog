@@ -322,8 +322,8 @@
   document.getElementById('sort-select').addEventListener('change', e => { sortBy=e.target.value; render(); });
   document.getElementById('search-btn').addEventListener('click', render);
   document.getElementById('search-input').addEventListener('keydown', e => { if(e.key==='Enter') render(); });
-  let t;
-  document.getElementById('search-input').addEventListener('input', () => { clearTimeout(t); t=setTimeout(render,250); });
+  let searchTimer;
+  document.getElementById('search-input').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer=setTimeout(render,250); });
 </script>
 </body>
 </html>
