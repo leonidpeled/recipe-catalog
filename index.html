@@ -280,7 +280,7 @@ renderVirtual(getSorted(recipes), `סה"כ ${recipes.length} מתכונים מ-$
 
   // טעינה עם cache
   const CACHE_KEY = 'recipes_cache';
-  const CACHE_VER = 'v2';
+  const CACHE_VER = 'v3';
   async function loadRecipes() {
     try {
       const cached = sessionStorage.getItem(CACHE_KEY);
